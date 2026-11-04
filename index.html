@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<title>2026 品牌月｜最喜歡的版主票選</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta property="og:title" content="2026 品牌月｜最喜歡的版主票選">
+<meta property="og:description" content="可複選，選出你最喜歡的品牌月活動版主。投票完全匿名。">
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=Noto+Serif+TC:wght@600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#F6F1E8; --card:#FFFDF9; --ink:#2A2520; --muted:#7A6F63; --line:#E6DCCD;
+    --accent:#1F4E4A; --accent-ink:#fff; --gold:#B8925A; --sel:#E9F1EE;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--ink);font-family:"Noto Sans TC",system-ui,sans-serif;line-height:1.6;padding-bottom:110px}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 16px}
+  header{padding:40px 0 22px;text-align:center}
+  .eyebrow{font-size:13px;letter-spacing:.2em;color:var(--gold);font-weight:500}
+  h1{font-family:"Noto Serif TC",serif;font-size:clamp(26px,5vw,38px);margin:6px 0 8px;line-height:1.3}
+  .sub{color:var(--muted);font-size:15px}
+  .meta{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:14px}
+  .chip{font-size:12.5px;border:1px solid var(--line);background:var(--card);border-radius:999px;padding:3px 12px;color:var(--muted)}
+  .notice{margin:4px auto 18px;max-width:560px;text-align:center;font-size:14px;padding:10px 14px;border-radius:10px;background:#FFF4E0;color:#7A5418;display:none}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:18px}
+  .card{position:relative;background:var(--card);border:1.5px solid var(--line);border-radius:16px;overflow:hidden;cursor:pointer;
+        transition:border-color .15s,box-shadow .15s,transform .15s;display:flex;flex-direction:column;-webkit-tap-highlight-color:transparent}
+  .card:hover{box-shadow:0 6px 20px rgba(42,37,32,.08)}
+  .card.on{border-color:var(--accent);box-shadow:0 0 0 3px var(--sel)}
+  .card.ro{cursor:default}
+  .img{aspect-ratio:4/3;background:#EFE7DA;display:flex;align-items:center;justify-content:center;overflow:hidden;position:relative}
+  .img img{width:100%;height:100%;object-fit:contain;display:block;opacity:0;transition:opacity .3s}
+  .img img.ready{opacity:1}
+  .img .ph{position:absolute;font-size:13px;color:var(--muted)}
+  .zoom{position:absolute;right:10px;top:10px;width:34px;height:34px;border-radius:50%;border:0;background:rgba(255,255,255,.9);
+        cursor:zoom-in;font-size:16px;display:flex;align-items:center;justify-content:center;box-shadow:0 1px 4px rgba(0,0,0,.15)}
+  .body{display:flex;align-items:center;gap:12px;padding:14px 16px}
+  .mon{flex:none;width:48px;height:48px;border-radius:12px;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;
+       font-family:"Noto Serif TC",serif;color:var(--accent);line-height:1}
+  .mon b{font-size:20px}.mon small{font-size:11px;margin-top:3px}
+  .who{flex:1;min-width:0}
+  .host{font-weight:700;font-size:17px}
+  .topic{font-size:13.5px;color:var(--muted)}
+  .tick{flex:none;width:28px;height:28px;border-radius:50%;border:2px solid var(--line);display:flex;align-items:center;justify-content:center;color:transparent;font-size:15px;transition:.15s}
+  .card.on .tick{background:var(--accent);border-color:var(--accent);color:#fff}
+  .bar{height:6px;background:var(--bg);margin:0 16px 14px;border-radius:3px;overflow:hidden;display:none}
+  .bar i{display:block;height:100%;background:var(--gold);border-radius:3px;transition:width .6s}
+  .count{font-size:13px;color:var(--muted);text-align:right;padding:0 16px 12px;margin-top:-8px;display:none}
+  .show-res .bar,.show-res .count{display:block}
+  .dock{position:fixed;left:0;right:0;bottom:0;background:rgba(255,253,249,.96);backdrop-filter:blur(8px);border-top:1px solid var(--line);
+        padding:12px 16px calc(12px + env(safe-area-inset-bottom))}
+  .dock .wrap{display:flex;align-items:center;gap:12px;justify-content:space-between;padding:0}
+  .status{font-size:14.5px;color:var(--muted)}
+  .status b{color:var(--ink)}
+  button.go{border:0;background:var(--accent);color:var(--accent-ink);font:inherit;font-weight:700;font-size:16px;padding:12px 26px;border-radius:12px;cursor:pointer;min-width:140px}
+  button.go:disabled{opacity:.4;cursor:not-allowed}
+  .lb{position:fixed;inset:0;background:rgba(20,17,14,.88);display:none;align-items:center;justify-content:center;padding:16px;z-index:9}
+  .lb.open{display:flex}
+  .lb img{max-width:100%;max-height:100%;border-radius:8px}
+  .toast{position:fixed;left:50%;bottom:96px;transform:translateX(-50%) translateY(20px);background:var(--ink);color:#fff;padding:10px 18px;border-radius:10px;
+         font-size:14px;opacity:0;transition:.25s;pointer-events:none;z-index:10}
+  .toast.show{opacity:1;transform:translateX(-50%)}
+  footer{text-align:center;color:var(--muted);font-size:12.5px;margin:30px 0 0}
+  @media (max-width:420px){.grid{grid-template-columns:1fr}.go{min-width:0;padding:12px 18px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="eyebrow">WHITE COAT LIFE ACADEMY</div>
+    <h1 id="title"></h1>
+    <p class="sub" id="sub"></p>
+    <div class="meta" id="meta"></div>
+  </header>
+  <div class="notice" id="notice"></div>
+  <main class="grid" id="grid"><p id="loading" style="grid-column:1/-1;text-align:center;color:var(--muted);padding:40px 0">載入中…</p></main>
+  <footer>匿名投票：不需登入，不記錄姓名、Email 或 IP。同一裝置可重新送出以修改選擇。</footer>
+</div>
+
+<div class="dock"><div class="wrap">
+  <div class="status" id="status">點選卡片即可選擇</div>
+  <button class="go" id="go" disabled>送出投票</button>
+</div></div>
+
+<div class="lb" id="lb"><img id="lbimg" alt=""></div>
+<div class="toast" id="toast"></div>
+
+<script>
+const API = 'https://script.google.com/macros/s/AKfycbxqgSrzPEK3ncfzcpcbUufgjFLH2SK5Kbh3XSWd8AOJNToJmSyb3LL57tAeoRyUBuovug/exec';
+function apiGet(params){
+  const q=new URLSearchParams(params).toString();
+  return fetch(API+'?'+q,{credentials:'omit',redirect:'follow'}).then(r=>r.json()).then(j=>{ if(j&&j.error) throw new Error(j.error); return j; });
+}
+function apiPost(body){
+  return fetch(API,{method:'POST',credentials:'omit',redirect:'follow',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(body)})
+    .then(r=>r.json()).then(j=>{ if(j&&j.error) throw new Error(j.error); return j; });
+}
+let BOOT = {title:'',subtitle:'',maxPicks:0,deadline:'',candidates:[]};
+const $ = s => document.querySelector(s);
+const picks = new Set();
+const imgs = {};
+let state = {closed:false, myPicks:[], results:null};
+let busy = false;
+
+function token(){
+  const k='brandmonth_vote_token';
+  try{
+    let t=localStorage.getItem(k);
+    if(!t){ t=(crypto.randomUUID?crypto.randomUUID():String(Math.random()).slice(2)+Date.now()+String(Math.random()).slice(2)); localStorage.setItem(k,t); }
+    return t;
+  }catch(e){ if(!window.__t) window.__t=String(Math.random()).slice(2)+Date.now()+String(Math.random()).slice(2); return window.__t; }
+}
+
+function toast(msg){ const t=$('#toast'); t.textContent=msg; t.classList.add('show'); clearTimeout(toast.h); toast.h=setTimeout(()=>t.classList.remove('show'),2400); }
+
+function header(){
+  $('#title').textContent=BOOT.title; $('#sub').textContent=BOOT.subtitle;
+  const m=$('#meta'); m.innerHTML='';
+  const chips=[ BOOT.candidates.length+' 位版主', BOOT.maxPicks?('最多選 '+BOOT.maxPicks+' 位'):'可複選，不限人數' ];
+  if(BOOT.deadline){ const d=new Date(BOOT.deadline); chips.push('截止 '+(d.getMonth()+1)+'/'+d.getDate()+' '+String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0')); }
+  chips.forEach(c=>{ const s=document.createElement('span'); s.className='chip'; s.textContent=c; m.appendChild(s); });
+}
+
+function render(){
+  const g=$('#grid'); g.innerHTML='';
+  const res=state.results; const max=res?Math.max(1,...Object.values(res.counts)):1;
+  g.classList.toggle('show-res',!!res);
+  BOOT.candidates.forEach(c=>{
+    const el=document.createElement('article');
+    el.className='card'+(picks.has(c.id)?' on':'')+(state.closed?' ro':'');
+    el.setAttribute('role','checkbox'); el.setAttribute('aria-checked',picks.has(c.id)); el.tabIndex=0;
+    const n=res?(res.counts[c.id]||0):0;
+    el.innerHTML=
+      '<div class="img"><span class="ph">圖卡載入中…</span><img alt=""><button class="zoom" title="放大" aria-label="放大圖卡">⤢</button></div>'+
+      '<div class="body">'+
+        '<div class="mon"><b>'+Number(c.month)+'</b><small>月</small></div>'+
+        '<div class="who"><div class="host"></div><div class="topic"></div></div>'+
+        '<div class="tick">✓</div>'+
+      '</div>'+
+      '<div class="bar"><i style="width:'+(res?Math.round(n/max*100):0)+'%"></i></div>'+
+      '<div class="count">'+n+' 票</div>';
+    el.querySelector('.host').textContent=c.host;
+    el.querySelector('.topic').textContent=c.topic;
+    el.querySelector('img').alt=c.month+'月 '+c.host;
+    if(imgs[c.id]) setImg(el,imgs[c.id]);
+    el.querySelector('.zoom').onclick=e=>{ e.stopPropagation(); if(imgs[c.id]){ $('#lbimg').src=imgs[c.id]; $('#lb').classList.add('open'); } };
+    const toggle=()=>{
+      if(state.closed) return;
+      if(picks.has(c.id)) picks.delete(c.id);
+      else { if(BOOT.maxPicks && picks.size>=BOOT.maxPicks){ toast('最多選 '+BOOT.maxPicks+' 位'); return; } picks.add(c.id); }
+      el.classList.toggle('on',picks.has(c.id)); el.setAttribute('aria-checked',picks.has(c.id)); dock();
+    };
+    el.onclick=toggle;
+    el.onkeydown=e=>{ if(e.key===' '||e.key==='Enter'){ e.preventDefault(); toggle(); } };
+    el.dataset.id=c.id;
+    g.appendChild(el);
+  });
+  dock();
+}
+
+function setImg(el,src){ const i=el.querySelector('img'); i.onload=()=>{i.classList.add('ready'); const p=el.querySelector('.ph'); if(p) p.remove();}; i.src=src; }
+
+function dock(){
+  const go=$('#go'), st=$('#status');
+  if(state.closed){ go.disabled=true; go.textContent='投票已截止'; st.innerHTML=state.results?('共 <b>'+state.results.voters+'</b> 人投票'):'感謝參與'; return; }
+  const voted=state.myPicks.length>0;
+  go.disabled=busy||picks.size===0;
+  go.textContent=busy?'送出中…':(voted?'更新我的投票':'送出投票');
+  st.innerHTML=picks.size?('已選 <b>'+picks.size+'</b> 位'+(state.results?'｜共 '+state.results.voters+' 人投票':'')):(voted?'你已投過票，可修改後重新送出':'點選卡片即可選擇');
+}
+
+function loadImages(){
+  BOOT.candidates.forEach(c=>{
+    apiGet({api:'image',id:c.id}).then(r=>{
+      imgs[c.id]=r.src;
+      const el=document.querySelector('.card[data-id="'+c.id+'"]'); if(el) setImg(el,r.src);
+    }).catch(()=>{
+      const el=document.querySelector('.card[data-id="'+c.id+'"] .ph'); if(el) el.textContent='圖卡載入失敗';
+    });
+  });
+}
+
+$('#go').onclick=()=>{
+  if(busy||!picks.size) return;
+  busy=true; dock();
+  apiPost({token:token(),picks:[...picks]}).then(r=>{
+    busy=false; state.myPicks=[...picks]; state.results=r.results||state.results;
+    render(); toast('已收到你的投票，謝謝！');
+  }).catch(err=>{
+    busy=false; dock(); toast(err&&err.message&&err.message!=='Failed to fetch'?err.message:'送出失敗，請再試一次');
+  });
+};
+$('#lb').onclick=()=>$('#lb').classList.remove('open');
+document.addEventListener('keydown',e=>{ if(e.key==='Escape') $('#lb').classList.remove('open'); });
+
+apiGet({api:'boot'}).then(b=>{
+  BOOT=b; document.title=b.title;
+  header(); render(); loadImages();
+  return apiGet({api:'state',token:token()});
+}).then(s=>{
+  state=s; s.myPicks.forEach(p=>picks.add(p));
+  if(s.closed){ const n=$('#notice'); n.textContent='投票已截止'+(s.results?'，以下為最終結果。':'，感謝參與！'); n.style.display='block'; }
+  render();
+}).catch(()=>{
+  const l=$('#loading'); if(l) l.textContent='載入失敗，請重新整理頁面';
+});
+</script>
+</body>
+</html>
