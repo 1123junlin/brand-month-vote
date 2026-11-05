@@ -61,6 +61,12 @@
   .toast{position:fixed;left:50%;bottom:96px;transform:translateX(-50%) translateY(20px);background:var(--ink);color:#fff;padding:10px 18px;border-radius:10px;
          font-size:14px;opacity:0;transition:.25s;pointer-events:none;z-index:10}
   .toast.show{opacity:1;transform:translateX(-50%)}
+  .msg{margin:28px auto 0;max-width:720px;background:var(--card);border:1.5px solid var(--line);border-radius:16px;padding:18px 18px 12px}
+  .msg label{display:block;font-weight:700;font-size:16px;margin-bottom:10px}
+  .msg label span{font-weight:400;font-size:13px;color:var(--muted);margin-left:4px}
+  .msg textarea{width:100%;border:1.5px solid var(--line);border-radius:12px;padding:12px 14px;font:inherit;font-size:15px;color:var(--ink);background:#fff;resize:vertical;min-height:96px;outline:none}
+  .msg textarea:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--sel)}
+  .msg .hint{display:flex;justify-content:space-between;font-size:12.5px;color:var(--muted);margin-top:6px}
   footer{text-align:center;color:var(--muted);font-size:12.5px;margin:30px 0 0}
   @media (max-width:420px){.grid{grid-template-columns:1fr}.go{min-width:0;padding:12px 18px}}
 </style>
@@ -75,6 +81,11 @@
   </header>
   <div class="notice" id="notice"></div>
   <main class="grid" id="grid"><p id="loading" style="grid-column:1/-1;text-align:center;color:var(--muted);padding:40px 0">載入中…</p></main>
+  <section class="msg">
+    <label for="msg">您有什麼話想對品牌月版主說的嗎？<span>（選填）</span></label>
+    <textarea id="msg" maxlength="500" placeholder="寫下你想說的話，會跟投票一起匿名送出"></textarea>
+    <div class="hint"><span>送出投票時一併送出</span><span id="msgcount">0 / 500</span></div>
+  </section>
   <footer>匿名投票：不需登入，不記錄姓名、Email 或 IP。同一裝置可重新送出以修改選擇。</footer>
 </div>
 
@@ -184,13 +195,15 @@ function loadImages(){
 $('#go').onclick=()=>{
   if(busy||!picks.size) return;
   busy=true; dock();
-  apiPost({token:token(),picks:[...picks]}).then(r=>{
+  apiPost({token:token(),picks:[...picks],message:$('#msg').value.trim()}).then(r=>{
     busy=false; state.myPicks=[...picks]; state.results=r.results||state.results;
     render(); toast('已收到你的投票，謝謝！');
   }).catch(err=>{
     busy=false; dock(); toast(err&&err.message&&err.message!=='Failed to fetch'?err.message:'送出失敗，請再試一次');
   });
 };
+function msgCount(){ $('#msgcount').textContent=$('#msg').value.length+' / 500'; }
+$('#msg').addEventListener('input',msgCount);
 $('#lb').onclick=()=>$('#lb').classList.remove('open');
 document.addEventListener('keydown',e=>{ if(e.key==='Escape') $('#lb').classList.remove('open'); });
 
@@ -200,6 +213,7 @@ apiGet({api:'boot'}).then(b=>{
   return apiGet({api:'state',token:token()});
 }).then(s=>{
   state=s; s.myPicks.forEach(p=>picks.add(p));
+  if(s.myMessage && !$('#msg').value){ $('#msg').value=s.myMessage; msgCount(); }
   if(s.closed){ const n=$('#notice'); n.textContent='投票已截止'+(s.results?'，以下為最終結果。':'，感謝參與！'); n.style.display='block'; }
   render();
 }).catch(()=>{
